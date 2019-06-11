@@ -1,0 +1,7 @@
+https://docs.docker.com/get-started/part4/
+https://cloud.docker.com/repository/docker/jpruiz114/test-01/general
+https://technology.amis.nl/2018/05/21/rapidly-spinning-up-a-vm-with-ubuntu-and-docker-on-my-windows-machine-using-vagrant-and-virtualbox/
+https://gist.github.com/lucasjellema/7593677f6d03285236c8f0391f1a78c2
+https://www.blazemeter.com/blog/how-to-run-selenium-tests-in-docker
+https://www.digitalocean.com/community/tutorials/how-to-configure-a-continuous-integration-testing-environment-with-docker-and-docker-compose-on-ubuntu-14-04
+https://cwiki.apache.org/confluence/display/FINERACT/Fineract+Home
