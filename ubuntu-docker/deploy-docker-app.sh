@@ -4,13 +4,13 @@ echo "Deploy the \"Hello World\" Application"
 # Restart the daemon
 sudo service docker restart
 
-# The first line builds our local application image from the Dockerfile file.
+# This line builds our local application image from the Dockerfile file.
 sudo docker-compose -f /vagrant/hello_world/docker-compose.yml build
 
 # Restart the daemon
 sudo service docker restart
 
-# The second line runs the web and redis containers in daemon mode (-d), as specified in the docker-compose.yml file.
+# This line runs the web and redis containers in daemon mode (-d), as specified in the docker-compose.yml file.
 sudo docker-compose -f /vagrant/hello_world/docker-compose.yml up -d
 
 # Check that the application containers have been created by executing:
