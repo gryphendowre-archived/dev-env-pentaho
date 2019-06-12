@@ -1,0 +1,2 @@
+https://hub.docker.com/_/ubuntu
+https://github.com/tianon/docker-brew-ubuntu-core/blob/010bf9649b1d10e2c34b159a9a9b338d0fdd4939/bionic/Dockerfile
