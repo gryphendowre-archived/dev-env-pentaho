@@ -124,15 +124,12 @@ RUN rm -rf /tmp/pentaho-server-ce-8.2.0.8-704.zip
 EXPOSE 8080
 EXPOSE 8443
 
-ENV PENTAHO_JAVA_HOME=/usr/bin/
-ENV PENTAHO_JAVA=/usr/bin/java
-
 ADD startup.sh /customizations/startup.sh
 
-CMD ["/bin/bash", "/customizations/startup.sh"]
+RUN echo "sh /customizations/startup.sh" >> ~/.bashrc
 
 #########################
 # End of customizations #
 #########################
 
-#CMD ["/bin/bash"]
+CMD ["/bin/bash"]

@@ -1,0 +1,13 @@
+docker exec -it <container name> /bin/bash to get a bash 
+
+sudo docker system prune -a -f && clear && sudo docker-compose -f /vagrant/ubuntu_bionic/docker-compose.yml build
+
+sudo docker-compose -f /vagrant/ubuntu_bionic/docker-compose.yml build
+sudo docker container run -i -t --name pentaho_container_1 -p 8080:8080 -p 8443:8443 -p 5432:5432 ubuntubionic_web
+sudo docker container start pentaho_container_1
+sudo docker exec -it pentaho_container_1 /bin/bash
+
+sudo docker container stop pentaho_container_1
+sudo docker container rm -f pentaho_container_1
+
+sudo docker container stats pentaho_container_1
