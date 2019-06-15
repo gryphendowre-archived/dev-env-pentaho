@@ -47,40 +47,92 @@ RUN mkdir -p /run/systemd && echo 'docker' > /run/systemd/container
 # Beginning of customizations #
 ###############################
 
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends sudo
+
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends gnupg
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends software-properties-common
+
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends curl
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends wget
+
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends iputils-ping
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends telnet
 
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends zip
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends unzip
 
-RUN apt install --assume-yes openjdk-8-jdk
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends vim
 
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends xvfb
+
+# https://help.pentaho.com/Documentation/8.2/Setup/Installation/Archive/Linux_Environment
+
+# Create the Pentaho User - Creates a home directory for the user and ensures that bash is the default shell.
+RUN useradd -ms /bin/bash pentaho
+
+# Create Linux Directory Structure
+RUN mkdir -p /home/pentaho/server/pentaho-server
+RUN mkdir -p /home/.pentaho
+
+# Install Java
+RUN apt install --assume-yes openjdk-8-jdk
 RUN java -version
 RUN javac -version
 
-RUN wget -O /tmp/pentaho-server-ee-8.2.0.0-342.zip http://build.pentaho.net/hosted/8.2.0.0/342/pentaho-server-ee-8.2.0.0-342.zip
-RUN chmod 777 /tmp/pentaho-server-ee-8.2.0.0-342.zip
+# Install the Pentaho Repository Host Database
 
-# Creates a home directory for the user and ensures that bash is the default shell.
-RUN useradd -ms /bin/bash pentaho
+# Hit:1 http://archive.ubuntu.com/ubuntu bionic InRelease
+# Hit:2 http://archive.ubuntu.com/ubuntu bionic-updates InRelease
+# Hit:3 http://archive.ubuntu.com/ubuntu bionic-backports InRelease
+# Get:4 http://security.ubuntu.com/ubuntu bionic-security InRelease [88.7 kB]
+# Get:5 https://apt.postgresql.org/pub/repos/apt bionic-pgdg InRelease [41.4 kB]
+# Get:6 http://security.ubuntu.com/ubuntu bionic-security/universe amd64 Packages [717 kB]
+# Err:5 https://apt.postgresql.org/pub/repos/apt bionic-pgdg InRelease
+#   The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 7FCC7D46ACCC4CF8
+# Get:7 http://security.ubuntu.com/ubuntu bionic-security/main amd64 Packages [535 kB]
+# Reading package lists...
+# W: GPG error: https://apt.postgresql.org/pub/repos/apt bionic-pgdg InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 7FCC7D46ACCC4CF8
+# E: The repository 'https://apt.postgresql.org/pub/repos/apt bionic-pgdg InRelease' is not signed.
+# ERROR: Service 'web' failed to build: The command '/bin/sh -c add-apt-repository "deb https://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"' returned a non-zero code: 100
 
-RUN chown pentaho:pentaho /tmp/pentaho-server-ee-8.2.0.0-342.zip
+# https://itsfoss.com/solve-gpg-error-signatures-verified-ubuntu/
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 7FCC7D46ACCC4CF8
+RUN apt-get update
+RUN curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --import -
+RUN add-apt-repository "deb https://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main"
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+RUN apt-get update
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends postgresql-9.6
+RUN psql --version
 
-# Every command afterwards as well as interactive sessions will be executed as user pentaho
-USER pentaho
-WORKDIR /home/pentaho
+USER postgres
+RUN /etc/init.d/postgresql start && sleep 10 && echo "wake up!" && psql --command "CREATE USER pguser WITH SUPERUSER PASSWORD 'pguser';" && createdb -O pguser pgdb
+RUN /etc/init.d/postgresql start && sleep 10 && echo "wake up!" && psql --command "CREATE USER root WITH SUPERUSER PASSWORD '1234567890';" && createdb -O root root_db
 
-RUN unzip /tmp/pentaho-server-ee-8.2.0.0-342.zip -d /home/pentaho
+USER root
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.6/main/pg_hba.conf
+RUN echo "listen_addresses='*'" >> /etc/postgresql/9.6/main/postgresql.conf
 
-RUN ls -al /home/pentaho
+# Expose the PostgreSQL port
+EXPOSE 5432
 
+ADD pentaho-server-ce-8.2.0.8-704.zip /tmp/pentaho-server-ce-8.2.0.8-704.zip
+RUN unzip /tmp/pentaho-server-ce-8.2.0.8-704.zip -d /home/pentaho/server/
+RUN rm -rf /tmp/pentaho-server-ce-8.2.0.8-704.zip
+
+# Expose the Tomcat ports
 EXPOSE 8080
+EXPOSE 8443
 
-CMD ["sh", "/home/pentaho/server/pentaho-server/pentaho-server/start-pentaho.sh"]
+ENV PENTAHO_JAVA_HOME=/usr/bin/
+ENV PENTAHO_JAVA=/usr/bin/java
+
+ADD startup.sh /customizations/startup.sh
+
+CMD ["/bin/bash", "/customizations/startup.sh"]
 
 #########################
 # End of customizations #
 #########################
 
-# overwrite this with 'CMD []' in a dependent Dockerfile
-CMD ["/bin/bash"]
+#CMD ["/bin/bash"]

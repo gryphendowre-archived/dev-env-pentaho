@@ -2,6 +2,9 @@
 
 # check if the docker service exists
 if service --status-all | grep -Fq 'docker'; then
+	# Remove all stopped containers (-f = Do not prompt for confirmation)
+	sudo docker system prune -a -f
+	
 	if [ "$1" == "hello_world" ]; then
 		echo "Deploy the \"Hello World\" Application"
 
@@ -35,7 +38,7 @@ if service --status-all | grep -Fq 'docker'; then
 		
 		# Restart the daemon
 		sudo service docker restart
-
+		
 		# This line builds our local application image from the Dockerfile file
 		sudo docker-compose -f /vagrant/ubuntu_bionic/docker-compose.yml build
 
@@ -43,10 +46,21 @@ if service --status-all | grep -Fq 'docker'; then
 		sudo service docker restart
 
 		# Istantiate a container based on the image you just built
-		sudo docker container run -it ubuntubionic_web:latest
+		# sudo docker container run -it ubuntubionic_web:latest
+		# sudo docker container run -i -t --name pentaho_container_1 ubuntubionic_web
+		sudo docker container run -i -t --name pentaho_container_1 -p 8080:8080 -p 8443:8443 -p 5432:5432 ubuntubionic_web
 
 		# Check that the application containers have been created by executing:
-		sudo docker ps
+		# sudo docker ps
+		# sudo docker container ls
+		sudo docker container ls --all
+		
+		# Let's check to see that the application is up. We can get the IP of the pentaho_box container by executing:
+
+		WEB_APP_IP=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' pentaho_container_1)
+		echo "Web app available in the IP address $WEB_APP_IP"
+
+		
 	fi
 else
 	echo "Docker service is not available yet!"
