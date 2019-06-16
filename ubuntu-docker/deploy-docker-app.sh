@@ -46,27 +46,20 @@ if service --status-all | grep -Fq 'docker'; then
 		sudo service docker restart
 
 		# Istantiate a container based on the image you just built
-		# sudo docker container run -it ubuntubionic_web:latest
-		# sudo docker container run -i -t --name pentaho_container_1 ubuntubionic_web
-		# sudo docker container run -i -t --name pentaho_container_1 -p 8080:8080 -p 8443:8443 -p 5432:5432 ubuntubionic_web
-		
-		# Remove the -it from your cli to make it non interactive and remove the TTY.
-		# If you don't need either, e.g. running your command inside of a Jenkins or cron script, you should do this.
-		# Or you can change it to -i if you have input piped into the docker command that doesn't come from a TTY.
-		# If you have something like xyz | docker ... or docker ... <input in your command line, do this.
-		sudo docker container run -i --name pentaho_container_1 -p 8080:8080 -p 8443:8443 -p 5432:5432 ubuntubionic_web
+		sudo docker container run -i -d --name pentaho_container_1 -p 8080:8080 -p 8443:8443 -p 5432:5432 ubuntubionic_web
 
 		# Check that the application containers have been created by executing:
 		# sudo docker ps
 		# sudo docker container ls
 		sudo docker container ls --all
 		
+		# Run the startup script
+		sudo docker exec pentaho_container_1 /bin/sh /customizations/startup.sh
+		
 		# Let's check to see that the application is up. We can get the IP of the pentaho_box container by executing:
 
 		WEB_APP_IP=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' pentaho_container_1)
 		echo "Web app available in the IP address $WEB_APP_IP"
-
-		$LOCALAPPDATA\Google\Chrome\Application\chrome.exe --disable-web-security --disable-gpu --user-data-dir=~/chromeTemp $WEB_APP_IP:8080
 	fi
 else
 	echo "Docker service is not available yet!"
