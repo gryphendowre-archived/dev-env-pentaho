@@ -63,7 +63,22 @@ RUN apt-get update && apt-get install --assume-yes --no-install-recommends unzip
 
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends vim
 
+#https://packages.debian.org/sid/xvfb
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends xvfb
+
+# https://packages.debian.org/sid/libxi6
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends libxi6
+
+RUN sudo curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add
+RUN sudo echo "deb [arch=amd64]  http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+RUN sudo apt-get -y update
+RUN sudo apt-get -y install google-chrome-stable
+
+RUN wget https://chromedriver.storage.googleapis.com/2.9/chromedriver_linux64.zip -O /tmp/chromedriver_linux64.zip
+RUN unzip /tmp/chromedriver_linux64.zip -d /tmp/
+RUN sudo mv /tmp/chromedriver /usr/bin/chromedriver
+RUN sudo chown root:root /usr/bin/chromedriver
+RUN sudo chmod +x /usr/bin/chromedriver
 
 # https://help.pentaho.com/Documentation/8.2/Setup/Installation/Archive/Linux_Environment
 
