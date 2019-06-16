@@ -74,7 +74,7 @@ RUN sudo echo "deb [arch=amd64]  http://dl.google.com/linux/chrome/deb/ stable m
 RUN sudo apt-get -y update
 RUN sudo apt-get -y install google-chrome-stable
 
-RUN wget https://chromedriver.storage.googleapis.com/2.9/chromedriver_linux64.zip -O /tmp/chromedriver_linux64.zip
+RUN wget --quiet https://chromedriver.storage.googleapis.com/2.9/chromedriver_linux64.zip -O /tmp/chromedriver_linux64.zip
 RUN unzip /tmp/chromedriver_linux64.zip -d /tmp/
 RUN sudo mv /tmp/chromedriver /usr/bin/chromedriver
 RUN sudo chown root:root /usr/bin/chromedriver
@@ -95,6 +95,11 @@ RUN java -version
 RUN javac -version
 
 # Install the Pentaho Repository Host Database
+
+RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+RUN export DEBIAN_FRONTEND=noninteractive
+RUN apt-get install -y tzdata
+RUN dpkg-reconfigure --frontend noninteractive tzdata
 
 # Hit:1 http://archive.ubuntu.com/ubuntu bionic InRelease
 # Hit:2 http://archive.ubuntu.com/ubuntu bionic-updates InRelease
