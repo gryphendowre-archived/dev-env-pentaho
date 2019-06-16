@@ -33,3 +33,6 @@ fi
 
 # todo: move this to another file
 sudo apt-get install -y --no-install-recommends firefox
+
+# todo: find alternative for this
+sudo reboot

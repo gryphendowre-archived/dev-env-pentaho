@@ -59,7 +59,7 @@ if service --status-all | grep -Fq 'docker'; then
 		# Let's check to see that the application is up. We can get the IP of the pentaho_box container by executing:
 
 		WEB_APP_IP=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' pentaho_container_1)
-		echo "Web app available in the IP address $WEB_APP_IP"
+		echo "Web app available in the IP address $WEB_APP_IP inside vagrant box"
 	fi
 else
 	echo "Docker service is not available yet!"
