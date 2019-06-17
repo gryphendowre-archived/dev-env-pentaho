@@ -26,7 +26,7 @@ if service --status-all | grep -Fq 'docker'; then
 		# Let's check to see that the application is up. We can get the IP of the helloworld_web_1 container by executing:
 
 		WEB_APP_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' helloworld_web_1)
-		echo "Web app available in the IP address $WEB_APP_IP"
+		echo "web app available in the IP address $WEB_APP_IP inside vagrant box"
 
 		# Check that the web application is returning the proper message:
 		WEB_APP_CONTENT=$(curl -s http://${WEB_APP_IP}:80)
