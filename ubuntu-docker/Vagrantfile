@@ -33,7 +33,7 @@ Vagrant.configure("2") do |config|
 	config.disksize.size = '50GB'
 	
 	config.trigger.after :reload, :up do |trigger|
-		trigger.run = {inline: 'chrome http://192.168.100.100:8080'}
+		trigger.run = {inline: 'C:\\Users\\jeruiz\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe "http://192.168.100.100:8080"'}
 	end
 	
 	config.vm.provider :virtualbox do |vb, override|
@@ -80,10 +80,11 @@ Vagrant.configure("2") do |config|
 			type: "shell",
 			preserve_order: true,
 			path: "./deploy-docker-app.sh",
-			args: ["ubuntu_bionic"]
+			args: ["ubuntu_bionic"],
+			run: "always"
 		
 		override.vm.provision :host_shell do |host_shell|
-			host_shell.inline = 'echo hello from the host && hostname'
+			host_shell.inline = 'echo hello from the host && hostname && vagrant reload'
 		end
 	end
 end
