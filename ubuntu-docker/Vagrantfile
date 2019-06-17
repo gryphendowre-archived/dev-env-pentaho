@@ -74,7 +74,13 @@ Vagrant.configure("2") do |config|
 			type: "shell",
 			preserve_order: true,
 			path: "./deploy-docker-app.sh",
-			args: ["ubuntu_bionic"],
+			args: ["ubuntu_bionic"]
+		
+		override.vm.provision "run-docker-app",
+			type: "shell",
+			preserve_order: true,
+			path: "./run-docker-app.sh",
+			args: [],
 			run: "always"
 		
 		override.vm.provision :host_shell do |host_shell|

@@ -15,7 +15,9 @@ if service --status-all | grep -Fq 'postgresql'; then
 	
 	echo "service verification completed!"
 	
-	printf 'ok\n' | ./home/pentaho/server/pentaho-server/start-pentaho.sh
+	cd /home/pentaho/server/pentaho-server/
+	
+	printf 'ok\n' | ./start-pentaho.sh
 else
 	echo "postgresql service is not installed yet!"
 fi
