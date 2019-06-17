@@ -13,12 +13,6 @@ unless Vagrant.has_plugin?("vagrant-host-shell")
 	exit
 end
 
-unless Vagrant.has_plugin?("vagrant-reload")
-	system("vagrant plugin install vagrant-reload")
-	puts "Dependencies installed, please try the command again."
-	exit
-end
-
 Vagrant.configure("2") do |config|
 	# https://app.vagrantup.com/ubuntu/boxes/bionic64
 	# http://cloud-images.ubuntu.com/bionic/
@@ -75,8 +69,6 @@ Vagrant.configure("2") do |config|
 			preserve_order: true,
 			path: "./../scripts/install-docker.sh",
 			args: ["18.04"]
-		
-		override.vm.provision "reload-1", type: "reload", preserve_order: true
 		
 		override.vm.provision "deploy-docker-app",
 			type: "shell",
