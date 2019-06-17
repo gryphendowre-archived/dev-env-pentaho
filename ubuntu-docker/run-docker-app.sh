@@ -2,12 +2,9 @@
 
 # check if the docker service exists
 if service --status-all | grep -Fq 'docker'; then
-	# Restart the daemon
-	sudo service docker restart
-
-	# Istantiate a container based on the image you just built
-	sudo docker container run -i -d --name pentaho_container_1 -p 8080:8080 -p 8443:8443 -p 5432:5432 ubuntubionic_web
-
+	# Start the docker container
+	sudo docker container start pentaho_container_1
+	
 	# Check that the application containers have been created by executing:
 	sudo docker container ls --all
 
@@ -18,6 +15,9 @@ if service --status-all | grep -Fq 'docker'; then
 
 	WEB_APP_IP=$(sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' pentaho_container_1)
 	echo "Web app available in the IP address $WEB_APP_IP inside vagrant box"
+	
+	# Give time for the server to start
+	sleep 10
 else
 	echo "Docker service is not available yet!"
 fi

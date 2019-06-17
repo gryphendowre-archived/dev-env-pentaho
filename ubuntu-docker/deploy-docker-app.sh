@@ -41,6 +41,12 @@ if service --status-all | grep -Fq 'docker'; then
 		
 		# This line builds our local application image from the Dockerfile file
 		sudo docker-compose -f /vagrant/ubuntu_bionic/docker-compose.yml build
+		
+		# Restart the daemon
+		sudo service docker restart
+		
+		# Istantiate a container based on the image you just built
+		sudo docker container run -i -d --name pentaho_container_1 -p 8080:8080 -p 8443:8443 -p 5432:5432 ubuntubionic_web
 	fi
 else
 	echo "Docker service is not available yet!"
