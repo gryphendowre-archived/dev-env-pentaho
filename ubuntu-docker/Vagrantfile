@@ -84,7 +84,7 @@ Vagrant.configure("2") do |config|
 			run: "always"
 		
 		override.vm.provision :host_shell do |host_shell|
-			host_shell.inline = 'echo hello from the host && hostname'
+			host_shell.inline = 'echo the app will be avilable in http://192.168.100.100:8080'
 		end
 	end
 end

@@ -49,6 +49,8 @@ RUN mkdir -p /run/systemd && echo 'docker' > /run/systemd/container
 
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends sudo
 
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends dpkg
+
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends gnupg
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends software-properties-common
 
@@ -116,7 +118,8 @@ RUN dpkg-reconfigure --frontend noninteractive tzdata
 # ERROR: Service 'web' failed to build: The command '/bin/sh -c add-apt-repository "deb https://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"' returned a non-zero code: 100
 
 # https://itsfoss.com/solve-gpg-error-signatures-verified-ubuntu/
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 7FCC7D46ACCC4CF8
+#RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 7FCC7D46ACCC4CF8
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7FCC7D46ACCC4CF8
 RUN apt-get update
 RUN curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --import -
 RUN add-apt-repository "deb https://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main"
@@ -145,7 +148,6 @@ EXPOSE 8080
 EXPOSE 8443
 
 ADD startup.sh /customizations/startup.sh
-
 RUN echo "sh /customizations/startup.sh" >> ~/.bashrc
 
 #########################
