@@ -47,40 +47,43 @@ RUN mkdir -p /run/systemd && echo 'docker' > /run/systemd/container
 # Beginning of customizations #
 ###############################
 
-RUN apt-get update && apt-get install --assume-yes --no-install-recommends sudo
-
-RUN apt-get update && apt-get install --assume-yes --no-install-recommends dpkg
-
-RUN apt-get update && apt-get install --assume-yes --no-install-recommends gnupg
-RUN apt-get update && apt-get install --assume-yes --no-install-recommends software-properties-common
+#---------------------------#
+# Install packages required #
+#---------------------------#
 
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends curl
-RUN apt-get update && apt-get install --assume-yes --no-install-recommends wget
-
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends dpkg
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends gnupg
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends iputils-ping
-RUN apt-get update && apt-get install --assume-yes --no-install-recommends telnet
-
-RUN apt-get update && apt-get install --assume-yes --no-install-recommends zip
-RUN apt-get update && apt-get install --assume-yes --no-install-recommends unzip
-
-RUN apt-get update && apt-get install --assume-yes --no-install-recommends vim
-
-#https://packages.debian.org/sid/xvfb
-RUN apt-get update && apt-get install --assume-yes --no-install-recommends xvfb
-
-# https://packages.debian.org/sid/libxi6
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends libxi6
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends software-properties-common
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends sudo
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends telnet
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends unzip
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends vim
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends wget
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends xvfb
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends zip
 
+#------------------------------#
+# Install tools for automation #
+#------------------------------#
+
+# Install Google Chrome
 RUN sudo curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add
 RUN sudo echo "deb [arch=amd64]  http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
 RUN sudo apt-get -y update
 RUN sudo apt-get -y install google-chrome-stable
 
+# Install ChromeDriver
 RUN wget --quiet https://chromedriver.storage.googleapis.com/2.9/chromedriver_linux64.zip -O /tmp/chromedriver_linux64.zip
 RUN unzip /tmp/chromedriver_linux64.zip -d /tmp/
 RUN sudo mv /tmp/chromedriver /usr/bin/chromedriver
 RUN sudo chown root:root /usr/bin/chromedriver
 RUN sudo chmod +x /usr/bin/chromedriver
+
+# Download Required Jar Files
+RUN wget --quiet https://selenium-release.storage.googleapis.com/3.13/selenium-server-standalone-3.13.0.jar -O /tmp/selenium-server-standalone-3.13.0.jar
 
 # https://help.pentaho.com/Documentation/8.2/Setup/Installation/Archive/Linux_Environment
 
@@ -103,22 +106,6 @@ RUN export DEBIAN_FRONTEND=noninteractive
 RUN apt-get install -y tzdata
 RUN dpkg-reconfigure --frontend noninteractive tzdata
 
-# Hit:1 http://archive.ubuntu.com/ubuntu bionic InRelease
-# Hit:2 http://archive.ubuntu.com/ubuntu bionic-updates InRelease
-# Hit:3 http://archive.ubuntu.com/ubuntu bionic-backports InRelease
-# Get:4 http://security.ubuntu.com/ubuntu bionic-security InRelease [88.7 kB]
-# Get:5 https://apt.postgresql.org/pub/repos/apt bionic-pgdg InRelease [41.4 kB]
-# Get:6 http://security.ubuntu.com/ubuntu bionic-security/universe amd64 Packages [717 kB]
-# Err:5 https://apt.postgresql.org/pub/repos/apt bionic-pgdg InRelease
-#   The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 7FCC7D46ACCC4CF8
-# Get:7 http://security.ubuntu.com/ubuntu bionic-security/main amd64 Packages [535 kB]
-# Reading package lists...
-# W: GPG error: https://apt.postgresql.org/pub/repos/apt bionic-pgdg InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 7FCC7D46ACCC4CF8
-# E: The repository 'https://apt.postgresql.org/pub/repos/apt bionic-pgdg InRelease' is not signed.
-# ERROR: Service 'web' failed to build: The command '/bin/sh -c add-apt-repository "deb https://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main"' returned a non-zero code: 100
-
-# https://itsfoss.com/solve-gpg-error-signatures-verified-ubuntu/
-#RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 7FCC7D46ACCC4CF8
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7FCC7D46ACCC4CF8
 RUN apt-get update
 RUN curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --import -
