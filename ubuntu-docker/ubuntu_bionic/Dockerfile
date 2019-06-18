@@ -55,6 +55,7 @@ RUN apt-get update && apt-get install --assume-yes --no-install-recommends curl
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends dpkg
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends gnupg
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends iputils-ping
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends libgconf2-4
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends libxi6
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends software-properties-common
 RUN apt-get update && apt-get install --assume-yes --no-install-recommends sudo
@@ -76,7 +77,7 @@ RUN sudo apt-get -y update
 RUN sudo apt-get -y install google-chrome-stable
 
 # Install ChromeDriver
-RUN wget --quiet https://chromedriver.storage.googleapis.com/2.9/chromedriver_linux64.zip -O /tmp/chromedriver_linux64.zip
+RUN wget --quiet https://chromedriver.storage.googleapis.com/2.41/chromedriver_linux64.zip -O /tmp/chromedriver_linux64.zip
 RUN unzip /tmp/chromedriver_linux64.zip -d /tmp/
 RUN sudo mv /tmp/chromedriver /usr/bin/chromedriver
 RUN sudo chown root:root /usr/bin/chromedriver
@@ -98,6 +99,10 @@ RUN mkdir -p /home/.pentaho
 RUN apt install --assume-yes openjdk-8-jdk
 RUN java -version
 RUN javac -version
+
+ADD TecAdminSeleniumTest.java /tmp/TecAdminSeleniumTest.java
+RUN cd /tmp
+RUN javac -cp .:selenium-server-standalone-3.13.0.jar TecAdminSeleniumTest.java
 
 # Install the Pentaho Repository Host Database
 
